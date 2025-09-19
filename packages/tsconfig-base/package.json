@@ -1,0 +1,39 @@
+{
+  "name": "@artemkdr/tsconfig-base",
+  "version": "1.0.0",
+  "description": "Shared TypeScript configuration for all packages",
+  "main": "base.json",
+  "files": [
+    "base.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "echo \"No tests for config package\"",
+    "lint": "echo \"No linting for config package\"",
+    "build": "echo \"No build needed for config package\"",
+    "clean": "echo \"No clean needed for config package\""
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artemkdr/nodejs-libraries.git",
+    "directory": "packages/tsconfig-base"
+  },
+  "author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "typescript",
+    "config",
+    "tsconfig",
+    "shared",
+    "base"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "name": "@artemkdr/core",
+  "version": "1.0.0",
+  "description": "Core utilities and shared functionality",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts",
+      "bun": "./src/types/index.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts",
+      "bun": "./src/utils/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun run clean && bun run build:types && bun run build:cjs && bun run build:esm",
+    "build:types": "bun x tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist",
+    "build:cjs": "bun build src/index.ts --outdir dist --format cjs --target node",
+    "build:esm": "bun build src/index.ts --outfile dist/index.mjs --format esm --target node",
+    "dev": "bun x tsc --watch",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "lint": "bun x eslint src --ext .ts,.tsx",
+    "lint:fix": "bun x eslint src --ext .ts,.tsx --fix",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build && bun run test",
+    "version:patch": "bun version patch",
+    "version:minor": "bun version minor",
+    "version:major": "bun version major"
+  },
+  "dependencies": {
+    "winston": "^3.13.0",
+    "zod": "^4.1.3"
+  },
+  "devDependencies": {
+    "@artemkdr/tsconfig-base": "workspace:*"
+  },
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artemkdr/nodejs-libraries.git",
+    "directory": "packages/core"
+  },
+  "author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "utilities",
+    "core",
+    "nodejs",
+    "typescript",
+    "logger",
+    "error-handler",
+    "bun"
+  ]
+}

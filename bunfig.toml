@@ -1,0 +1,15 @@
+# Bun workspace configuration
+[install]
+# Automatically install peer dependencies
+auto = true
+
+# Use exact versions for better reproducibility  
+exact = true
+
+# Cache directory
+cache = ".bun/cache"
+
+[test]
+# Test configuration for Bun
+coverage = true
+timeout = 30000

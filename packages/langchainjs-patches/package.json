@@ -1,0 +1,80 @@
+{
+  "name": "@artemkdr/langchainjs-patches",
+  "version": "1.0.0",
+  "description": "Patches and enhancements for LangChain.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts"
+    },
+    "./vectorstores": {
+      "import": "./dist/libs/langchain-community/vectorstores/index.mjs",
+      "require": "./dist/libs/langchain-community/vectorstores/index.js",
+      "types": "./dist/libs/langchain-community/vectorstores/index.d.ts",
+      "bun": "./src/libs/langchain-community/vectorstores/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun run clean && bun run build:types && bun run build:cjs && bun run build:esm",
+    "build:types": "bun x tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist",
+    "build:cjs": "bun build src/index.ts --outdir dist --format cjs --target node",
+    "build:esm": "bun build src/index.ts --outfile dist/index.mjs --format esm --target node",
+    "dev": "bun x tsc --watch",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "lint": "bun x eslint src --ext .ts,.tsx",
+    "lint:fix": "bun x eslint src --ext .ts,.tsx --fix",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "bun run build && bun run test",
+    "version:patch": "bun version patch",
+    "version:minor": "bun version minor",
+    "version:major": "bun version major"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.2.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@artemkdr/tsconfig-base": "workspace:*",
+    "@types/pg": "^8.11.6"
+  },
+  "peerDependencies": {
+    "@langchain/community": ">=0.2.0",
+    "pg": ">=8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artemkdr/nodejs-libraries.git",
+    "directory": "packages/langchainjs-patches"
+  },
+  "author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "langchain",
+    "patches",
+    "vectorstore",
+    "pgvector",
+    "typescript",
+    "bun"
+  ]
+}
