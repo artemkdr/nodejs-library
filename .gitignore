@@ -3,6 +3,9 @@ node_modules/
 .pnp
 .pnp.js
 
+# bun
+.bun/
+
 # Testing
 coverage/
 *.lcov
