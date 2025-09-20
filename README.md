@@ -9,7 +9,7 @@ nodejs-library/
 ├── packages/
 │   ├── core/                    # Core utilities and shared functionality
 │   ├── langchainjs-patches/     # Patches and enhancements for LangChain.js
-│   └── tsconfig-base/           # Shared TypeScript configuration
+│   └── tsconfig-base-bun/           # Shared TypeScript configuration
 ├── scripts/                     # Build and publish scripts
 └── package.json                 # Root workspace configuration
 ```
@@ -25,8 +25,8 @@ nodejs-library/
 
 ```bash
 # Clone the repository
-git clone https://github.com/artemkdr/nodejs-libraries.git
-cd nodejs-libraries
+git clone https://github.com/artemkdr/nodejs-library.git
+cd nodejs-library
 
 # Install dependencies
 bun install
@@ -108,7 +108,7 @@ bun run version:major
 1. Create a new directory in `packages/`
 2. Add a `package.json` following the existing pattern
 3. Create `src/` directory with your code
-4. Add TypeScript configuration extending `artemkdr/tsconfig-base`
+4. Add TypeScript configuration extending `artemkdr/tsconfig-base-bun`
 5. Update root `package.json` workspaces if needed
 
 ## 🧪 Testing

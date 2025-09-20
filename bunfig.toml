@@ -6,8 +6,6 @@ auto = true
 # Use exact versions for better reproducibility  
 exact = true
 
-# Cache directory
-cache = ".bun/cache"
 
 [test]
 # Test configuration for Bun

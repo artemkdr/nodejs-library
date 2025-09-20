@@ -1,5 +1,5 @@
 {
-  "name": "@artemkdr/nodejs-libraries",
+  "name": "@artemkdr/nodejs-library",
   "version": "1.0.0",
   "description": "A collection of reusable Node.js libraries",
   "private": true,
@@ -12,7 +12,7 @@
     "lint": "bun run --filter='*' lint",
     "clean": "bun run --filter='*' clean && rm -rf node_modules/.cache",
     "dev": "bun run --filter='*' dev",
-    "publish:all": "bun run build && bun run --filter='*' publish",
+    "publish:all": "bun publish --filter='*'",
     "version:patch": "bun run --filter='*' version:patch",
     "version:minor": "bun run --filter='*' version:minor",
     "version:major": "bun run --filter='*' version:major",
@@ -37,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/artemkdr/nodejs-libraries.git"
+    "url": "https://github.com/artemkdr/nodejs-library.git"
   },
   "author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
   "license": "MIT",

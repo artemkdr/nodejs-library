@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "@artemkdr/nodejs-libraries",
+      "name": "@artemkdr/nodejs-library",
       "devDependencies": {
         "@eslint/js": "^9.34.0",
         "@eslint/json": "^0.13.1",
@@ -19,24 +19,24 @@
     },
     "packages/core": {
       "name": "@artemkdr/core",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "winston": "^3.13.0",
         "zod": "^4.1.3",
       },
       "devDependencies": {
-        "@artemkdr/tsconfig-base": "workspace:*",
+        "@artemkdr/tsconfig-base-bun": "workspace:*",
       },
     },
     "packages/langchainjs-patches": {
       "name": "@artemkdr/langchainjs-patches",
-      "version": "1.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@langchain/community": "^0.2.0",
         "pg": "^8.12.0",
       },
       "devDependencies": {
-        "@artemkdr/tsconfig-base": "workspace:*",
+        "@artemkdr/tsconfig-base-bun": "workspace:*",
         "@types/pg": "^8.11.6",
       },
       "peerDependencies": {
@@ -44,9 +44,9 @@
         "pg": ">=8.0.0",
       },
     },
-    "packages/tsconfig-base": {
-      "name": "@artemkdr/tsconfig-base",
-      "version": "1.0.0",
+    "packages/tsconfig-base-bun": {
+      "name": "@artemkdr/tsconfig-base-bun",
+      "version": "0.0.1",
     },
   },
   "packages": {
@@ -54,7 +54,7 @@
 
     "@artemkdr/langchainjs-patches": ["@artemkdr/langchainjs-patches@workspace:packages/langchainjs-patches"],
 
-    "@artemkdr/tsconfig-base": ["@artemkdr/tsconfig-base@workspace:packages/tsconfig-base"],
+    "@artemkdr/tsconfig-base-bun": ["@artemkdr/tsconfig-base-bun@workspace:packages/tsconfig-base-bun"],
 
     "@colors/colors": ["@colors/colors@1.6.0", "", {}, "sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA=="],
 
@@ -545,8 +545,6 @@
     "langchain/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "openai/@types/node": ["@types/node@18.19.127", "", { "dependencies": { "undici-types": "~5.26.4" } }, "sha512-gSjxjrnKXML/yo0BO099uPixMqfpJU0TKYjpfLU7TrtA2WWDki412Np/RSTPRil1saKBhvVVKzVx/p/6p94nVA=="],
-
-    "openai/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "zod-to-json-schema/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 

@@ -1,6 +1,6 @@
 {
   "name": "@artemkdr/langchainjs-patches",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Patches and enhancements for LangChain.js",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -47,7 +47,7 @@
     "pg": "^8.12.0"
   },
   "devDependencies": {
-    "@artemkdr/tsconfig-base": "workspace:*",
+    "@artemkdr/tsconfig-base-bun": "workspace:*",
     "@types/pg": "^8.11.6"
   },
   "peerDependencies": {
@@ -60,7 +60,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/artemkdr/nodejs-libraries.git",
+    "url": "https://github.com/artemkdr/nodejs-library.git",
     "directory": "packages/langchainjs-patches"
   },
   "author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
