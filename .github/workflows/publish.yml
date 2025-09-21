@@ -1,0 +1,58 @@
+name: Publish to NPM
+
+on:
+    workflow_call:
+        inputs:
+            package:
+                type: choice
+                description: The package to publish
+                options:
+                - core
+                - biome-base
+                - langchain-patches
+                - tsconfig-base-bun
+            version:
+                type: choice
+                description: Patch, minor, or major version bump
+                options:
+                - patch
+                - minor
+                - major
+                
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install server dependencies
+              run: bun install
+            
+            - name: Linting
+              run: bun lint
+
+            - name: Build
+              run: bun run build
+
+            - name: Run tests
+              run: bun test
+
+            - name: Set package version
+              run: |
+                  cd ${{ inputs.package }}
+                  bun version:${{ inputs.version }}
+
+            - name: Publish packages
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  cd ${{ inputs.package }}
+                  bun publish
