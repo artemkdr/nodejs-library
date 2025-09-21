@@ -4,9 +4,19 @@ on:
     push:
         branches:
             - main
+        paths:
+            - '!**/*.md'
+            - '!**/LICENSE'
+            - '!**/package.json'
+            - '!.npmrc'
     pull_request:
         branches:
             - main
+        paths:
+            - '!**/*.md'
+            - '!**/LICENSE'
+            - '!**/package.json'
+            - '!.npmrc'
 
 jobs:
     build-and-test:
