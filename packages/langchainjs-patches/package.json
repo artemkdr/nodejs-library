@@ -1,6 +1,6 @@
 {
 	"name": "@artemkdr/langchainjs-patches",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Patches and enhancements for LangChain.js",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
@@ -69,6 +69,7 @@
 		"registry": "https://registry.npmjs.org",
 		"access": "public"
 	},
+	"homepage": "https://github.com/artemkdr/nodejs-library/tree/main/packages/langchainjs-patches",
 	"keywords": [
 		"langchain",
 		"patches",

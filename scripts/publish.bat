@@ -5,8 +5,8 @@ setlocal enabledelayedexpansion
 echo 🚀 Starting build and publish process...
 
 REM Ensure we're authenticated
-if "%GITHUB_TOKEN%"=="" (
-    echo ❌ GITHUB_TOKEN environment variable is required
+if "%NPM_TOKEN%"=="" (
+    echo ❌ NPM_TOKEN environment variable is required
     exit /b 1
 )
 
@@ -31,8 +31,30 @@ bun run build
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 REM Publish packages
-echo 📤 Publishing to GitHub Packages...
-bun run --filter=* publish
+echo 📤 Publishing to npmjs packages...
+
+echo 📦 Publishing @artemkdr/biome-base...
+cd packages/biome-base
+bun publish
+cd ../..
+if !errorlevel! neq 0 exit /b !errorlevel!
+
+echo 📦 Publishing @artemkdr/core...
+cd packages/core
+bun publish
+cd ../..
+if !errorlevel! neq 0 exit /b !errorlevel!
+
+echo 📦 Publishing @artemkdr/langchainjs-patches...
+cd packages/langchainjs-patches
+bun publish
+cd ../..
+if !errorlevel! neq 0 exit /b !errorlevel!
+
+echo 📦 Publishing @artemkdr/tsconfig-base-bun...
+cd packages/tsconfig-base-bun
+bun publish
+cd ../..
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 echo ✅ All packages published successfully!

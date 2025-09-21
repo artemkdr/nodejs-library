@@ -1,6 +1,6 @@
 {
 	"name": "@artemkdr/tsconfig-base-bun",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Shared TypeScript configuration for all packages using bun",
 	"main": "base.json",
 	"files": [
@@ -34,6 +34,7 @@
 		"registry": "https://registry.npmjs.org",
 		"access": "public"
 	},
+	"homepage": "https://github.com/artemkdr/nodejs-library/tree/main/packages/tsconfig-base-bun",
 	"keywords": [
 		"typescript",
 		"config",

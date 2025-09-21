@@ -1,6 +1,6 @@
 {
 	"name": "@artemkdr/core",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Core utilities and shared functionality",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
@@ -72,6 +72,7 @@
 		"registry": "https://registry.npmjs.org",
 		"access": "public"
 	},
+	"homepage": "https://github.com/artemkdr/nodejs-library/tree/main/packages/core",
 	"keywords": [
 		"utilities",
 		"core",
