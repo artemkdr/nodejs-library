@@ -4,19 +4,21 @@ on:
     push:
         branches:
             - main
-        paths:
-            - '!**/*.md'
-            - '!**/LICENSE'
-            - '!**/package.json'
-            - '!.npmrc'
+        paths-ignore:
+            - '**/*.md'
+            - '**/LICENSE'
+            - '**/package.json'
+            - '**/.npmrc'
+            - '.github/workflows/*.yml'
     pull_request:
         branches:
             - main
-        paths:
-            - '!**/*.md'
-            - '!**/LICENSE'
-            - '!**/package.json'
-            - '!.npmrc'
+        paths-ignore:
+            - '**/*.md'
+            - '**/LICENSE'
+            - '**/package.json'
+            - '**/.npmrc'
+            - '.github/workflows/*.yml'
 
 jobs:
     build-and-test:
