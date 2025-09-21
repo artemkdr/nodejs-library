@@ -49,6 +49,7 @@
 		"version:major": "bun pm version major"
 	},
 	"dependencies": {
+		"dotenv": "17.2.2",
 		"winston": "^3.13.0",
 		"zod": "^4.1.3"
 	},
@@ -68,7 +69,7 @@
 	"author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
 	"license": "MIT",
 	"publishConfig": {
-		"registry": "https://npm.pkg.github.com",
+		"registry": "https://registry.npmjs.org",
 		"access": "public"
 	},
 	"keywords": [

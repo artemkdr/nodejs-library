@@ -13,10 +13,15 @@
         "typescript": "^5.5.4",
       },
     },
+    "packages/biome-base": {
+      "name": "@artemkdr/biome-base",
+      "version": "0.0.1",
+    },
     "packages/core": {
       "name": "@artemkdr/core",
       "version": "0.0.1",
       "dependencies": {
+        "dotenv": "17.2.2",
         "winston": "^3.13.0",
         "zod": "^4.1.3",
       },
@@ -46,6 +51,8 @@
     },
   },
   "packages": {
+    "@artemkdr/biome-base": ["@artemkdr/biome-base@workspace:packages/biome-base"],
+
     "@artemkdr/core": ["@artemkdr/core@workspace:packages/core"],
 
     "@artemkdr/langchainjs-patches": ["@artemkdr/langchainjs-patches@workspace:packages/langchainjs-patches"],
@@ -139,6 +146,8 @@
     "decamelize": ["decamelize@1.2.0", "", {}, "sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA=="],
 
     "delayed-stream": ["delayed-stream@1.0.0", "", {}, "sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ=="],
+
+    "dotenv": ["dotenv@17.2.2", "", {}, "sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q=="],
 
     "dunder-proto": ["dunder-proto@1.0.1", "", { "dependencies": { "call-bind-apply-helpers": "^1.0.1", "es-errors": "^1.3.0", "gopd": "^1.2.0" } }, "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A=="],
 

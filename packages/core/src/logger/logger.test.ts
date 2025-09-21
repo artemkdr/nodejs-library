@@ -4,12 +4,12 @@
  */
 
 import { describe, expect, it, beforeEach, mock } from "bun:test";
-import { Logger } from "../utils/logger";
-import type { LoggingConfig } from "../types/config";
+import { Logger } from "..";
+import type { LoggingConfig } from "./types";
 import {
 	DEFAULT_MASKING_CONFIG,
 	type SensitiveDataMaskingConfig,
-} from "../utils/sensitive-data-masker";
+} from "./sensitive-data-masker";
 
 // Mock winston to capture logged messages
 const mockError = mock();

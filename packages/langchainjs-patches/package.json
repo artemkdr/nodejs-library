@@ -66,7 +66,7 @@
 	"author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
 	"license": "MIT",
 	"publishConfig": {
-		"registry": "https://npm.pkg.github.com",
+		"registry": "https://registry.npmjs.org",
 		"access": "public"
 	},
 	"keywords": [

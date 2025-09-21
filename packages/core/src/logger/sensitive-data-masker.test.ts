@@ -7,7 +7,7 @@ import { describe, expect, it } from "bun:test";
 import {
 	SensitiveDataMasker,
 	type SensitiveDataMaskingConfig,
-} from "../utils/sensitive-data-masker";
+} from "./sensitive-data-masker";
 
 describe("SensitiveDataMasker", () => {
 	describe("constructor", () => {

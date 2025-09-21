@@ -1,11 +1,30 @@
 import winston from "winston";
-import type { ILogger } from "../types/logger";
-import type { LoggingConfig } from "../types/config";
-import {
-	SensitiveDataMasker,
-	DEFAULT_MASKING_CONFIG,
-} from "../utils/sensitive-data-masker";
 
+import type { ILogger, LoggingConfig } from "./types";
+import {
+	DEFAULT_MASKING_CONFIG,
+	SensitiveDataMasker,
+} from "./sensitive-data-masker";
+
+/**
+ * Logger class implementing ILogger using Winston.
+ * Supports log levels, formats, file and console transports, and sensitive data masking.
+ *
+ * Usage:
+ * const logger = new Logger(config);
+ * logger.info("This is an info message", { user: "john_doe" });
+ *
+ * Configuration options allow enabling/disabling transports, setting log levels/formats,
+ * and configuring sensitive data masking.
+ *
+ * Logging formats supported:
+ * - json: Structured JSON logs
+ * - simple: Plain text logs
+ * - combined: Custom format with timestamp, level, message, and metadata
+ *
+ * The logger automatically masks sensitive information in both messages and metadata
+ * based on predefined patterns and custom configurations.
+ */
 export class Logger implements ILogger {
 	private winston: winston.Logger;
 	private masker: SensitiveDataMasker;

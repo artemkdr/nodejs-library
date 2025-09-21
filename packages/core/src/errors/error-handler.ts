@@ -3,88 +3,26 @@
  * @author github/artemkdr
  */
 
-import type {
-	ICircuitBreaker,
-	IErrorHandler,
-	IRetryHandler,
-} from "../types/errors";
-import type { ZodError } from "zod";
-
-/**
- * Custom error classes for specific error types.
- */
-export class APIError extends Error {
-	constructor(
-		message: string,
-		public readonly statusCode?: number,
-		public readonly service?: string,
-		originalError?: Error,
-	) {
-		super(message);
-		this.name = "APIError";
-		this.cause = originalError;
-	}
-}
-
-export class ConfigurationError extends Error {
-	constructor(
-		message: string,
-		public readonly configKey?: string,
-	) {
-		super(message);
-		this.name = "ConfigurationError";
-	}
-}
-
-export class DataFetchError extends Error {
-	constructor(
-		message: string,
-		public readonly source?: string,
-		public readonly operation?: string,
-		public readonly retryCount?: number,
-		originalError?: Error,
-	) {
-		super(message);
-		this.name = "DataFetchError";
-		this.cause = originalError;
-	}
-}
-
-export class DataValidationError extends Error {
-	public readonly validationErrors?:
-		| Array<{ path: string; message: string }>
-		| undefined;
-	public readonly originalMessage: string;
-
-	constructor(message: string, validationError?: ZodError) {
-		const zodError = validationError;
-		const validationErrors = zodError?.issues.map((issue) => ({
-			path: issue.path.join("."),
-			message: issue.message,
-		}));
-		super(`Validation failed: ${JSON.stringify(validationErrors)}`);
-		this.originalMessage = message;
-		this.name = "DataValidationError";
-		this.validationErrors = validationErrors;
-		this.cause = validationError;
-	}
-}
-
-export class DatabaseError extends Error {
-	constructor(
-		message: string,
-		public readonly source?: string,
-		public readonly operation?: string,
-		originalError?: Error,
-	) {
-		super(message);
-		this.name = "DatabaseError";
-		this.cause = originalError;
-	}
-}
+import type { ICircuitBreaker, IErrorHandler, IRetryHandler } from "./types";
 
 /**
  * Retry utility with exponential backoff.
+ *
+ * @example
+ * This example demonstrates how to use the RetryHandler to execute an asynchronous operation with retry logic.
+ * The operation will be retried up to 5 times with an initial delay of 500ms, doubling the delay after each attempt.
+ * The shouldRetry function is used to determine if the operation should be retried based on the error encountered.
+ * ```typescript
+ * const retryHandler = new RetryHandler(5, 500);
+ * try {
+ *     const result = await retryHandler.execute(asyncOperation, (error) => {
+ *         // Retry only on network errors
+ *         return error.message.includes("Network Error");
+ *     });
+ * } catch (error) {
+ *     console.error("Operation failed after retries:", error);
+ * }
+ * ```
  */
 export class RetryHandler implements IRetryHandler {
 	constructor(
@@ -122,6 +60,18 @@ export class RetryHandler implements IRetryHandler {
 
 /**
  * Circuit breaker pattern implementation.
+ *
+ * @example
+ * This example demonstrates how to use the CircuitBreaker to execute an asynchronous operation with circuit breaker logic.
+ * The circuit breaker will open after 3 consecutive failures and will attempt to reset after 30 seconds.
+ * ```typescript
+ * const circuitBreaker = new CircuitBreaker(3, 30000);
+ * try {
+ *     const result = await circuitBreaker.execute(asyncOperation, "AsyncOperation");
+ * } catch (error) {
+ *     console.error("Operation failed:", error);
+ * }
+ * ```
  */
 export class CircuitBreaker implements ICircuitBreaker {
 	private failures = 0;
@@ -190,6 +140,23 @@ export class CircuitBreaker implements ICircuitBreaker {
 
 /**
  * Error handler utility functions.
+ *
+ * @example
+ * This example demonstrates how to use the ErrorHandler to handle errors in asynchronous operations.
+ * The handleError method is used to wrap an error into a specified error class with additional context.
+ * The utility of handleError is to standardize error handling and provide more informative error messages
+ * before propagating them up the call stack.
+ *
+ * The safeExecute method is used to safely execute an asynchronous operation, returning a default value in case of failure.
+ * ```typescript
+ * const errorHandler = new ErrorHandler();
+ * try {
+ *     const result = await errorHandler.safeExecute(asyncOperation, defaultValue);
+ * } catch (error) {
+ *     const handledError = errorHandler.handleError(error, CustomError, { context: 'Additional info' });
+ *     console.error(handledError);
+ * }
+ * ```
  */
 export class ErrorHandler implements IErrorHandler {
 	/**
