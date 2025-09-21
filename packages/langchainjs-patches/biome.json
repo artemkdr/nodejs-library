@@ -1,0 +1,10 @@
+{
+	"extends": ["../../packages/biome-base/base.json"],
+	"linter": {
+		"rules": {
+			"complexity": {
+				"useLiteralKeys": "off"
+			}
+		}
+	}
+}

@@ -4,875 +4,586 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, jest } from "bun:test";
-import z, { ZodError } from "zod";
+import type z from "zod";
+import { ZodError } from "zod";
 
 import {
-    APIError,
-    CircuitBreaker,
-    ConfigurationError,
-    DataFetchError,
-    DataValidationError,
-    ErrorHandler,
-    RetryHandler,
+	APIError,
+	CircuitBreaker,
+	ConfigurationError,
+	DataFetchError,
+	DataValidationError,
+	ErrorHandler,
+	RetryHandler,
 } from "./error-handler";
 
 // Helper to create mock ZodError
 function createMockZodError(
-    issues: Partial<z.core.$ZodIssue>[] = [],
+	issues: Partial<z.core.$ZodIssue>[] = [],
 ): ZodError {
-    const defaultIssues: z.core.$ZodIssue[] = issues.map((issue) => ({
-        code: "invalid_type",
-        expected: "string",
-        received: "number",
-        path: [],
-        message: "Expected string, received number",
-        ...issue,
-    })) as z.core.$ZodIssue[];
+	const defaultIssues: z.core.$ZodIssue[] = issues.map((issue) => ({
+		code: "invalid_type",
+		expected: "string",
+		received: "number",
+		path: [],
+		message: "Expected string, received number",
+		...issue,
+	})) as z.core.$ZodIssue[];
 
-    return new ZodError(defaultIssues);
+	return new ZodError(defaultIssues);
 }
 
 describe("Error Classes", () => {
-    describe("APIError", () => {
-        it("should create APIError with all properties", () => {
-            const originalError = new Error("Original error");
-            const apiError = new APIError(
-                "API failed",
-                500,
-                "TestService",
-                originalError,
-            );
+	describe("APIError", () => {
+		it("should create APIError with all properties", () => {
+			const originalError = new Error("Original error");
+			const apiError = new APIError(
+				"API failed",
+				500,
+				"TestService",
+				originalError,
+			);
 
-            expect(apiError.name).toBe("APIError");
-            expect(apiError.message).toBe("API failed");
-            expect(apiError.statusCode).toBe(500);
-            expect(apiError.service).toBe("TestService");
-            expect(apiError.originalError).toBe(originalError);
-        });
+			expect(apiError.name).toBe("APIError");
+			expect(apiError.message).toBe("API failed");
+			expect(apiError.statusCode).toBe(500);
+			expect(apiError.service).toBe("TestService");
+			expect(apiError.cause).toBe(originalError);
+		});
 
-        it("should create APIError with minimal properties", () => {
-            const apiError = new APIError("API failed");
+		it("should create APIError with minimal properties", () => {
+			const apiError = new APIError("API failed");
 
-            expect(apiError.name).toBe("APIError");
-            expect(apiError.message).toBe("API failed");
-            expect(apiError.statusCode).toBeUndefined();
-            expect(apiError.service).toBeUndefined();
-            expect(apiError.originalError).toBeUndefined();
-        });
-    });
+			expect(apiError.name).toBe("APIError");
+			expect(apiError.message).toBe("API failed");
+			expect(apiError.statusCode).toBeUndefined();
+			expect(apiError.service).toBeUndefined();
+			expect(apiError.cause).toBeUndefined();
+		});
+	});
 
-    describe("ConfigurationError", () => {
-        it("should create ConfigurationError with config key", () => {
-            const configError = new ConfigurationError(
-                "Config missing",
-                "api.key",
-            );
+	describe("ConfigurationError", () => {
+		it("should create ConfigurationError with config key", () => {
+			const configError = new ConfigurationError("Config missing", "api.key");
 
-            expect(configError.name).toBe("ConfigurationError");
-            expect(configError.message).toBe("Config missing");
-            expect(configError.configKey).toBe("api.key");
-        });
+			expect(configError.name).toBe("ConfigurationError");
+			expect(configError.message).toBe("Config missing");
+			expect(configError.configKey).toBe("api.key");
+		});
 
-        it("should create ConfigurationError without config key", () => {
-            const configError = new ConfigurationError("Config missing");
+		it("should create ConfigurationError without config key", () => {
+			const configError = new ConfigurationError("Config missing");
 
-            expect(configError.name).toBe("ConfigurationError");
-            expect(configError.message).toBe("Config missing");
-            expect(configError.configKey).toBeUndefined();
-        });
-    });
+			expect(configError.name).toBe("ConfigurationError");
+			expect(configError.message).toBe("Config missing");
+			expect(configError.configKey).toBeUndefined();
+		});
+	});
 
-    describe("DataFetchError", () => {
-        it("should create DataFetchError with all properties", () => {
-            const originalError = new Error("Original error");
-            const dataFetchError = new DataFetchError(
-                "Fetch failed",
-                "API",
-                "getData",
-                3,
-                originalError,
-            );
+	describe("DataFetchError", () => {
+		it("should create DataFetchError with all properties", () => {
+			const originalError = new Error("Original error");
+			const dataFetchError = new DataFetchError(
+				"Fetch failed",
+				"API",
+				"getData",
+				3,
+				originalError,
+			);
 
-            expect(dataFetchError.name).toBe("DataFetchError");
-            expect(dataFetchError.message).toBe("Fetch failed");
-            expect(dataFetchError.source).toBe("API");
-            expect(dataFetchError.operation).toBe("getData");
-            expect(dataFetchError.retryCount).toBe(3);
-            expect(dataFetchError.originalError).toBe(originalError);
-        });
+			expect(dataFetchError.name).toBe("DataFetchError");
+			expect(dataFetchError.message).toBe("Fetch failed");
+			expect(dataFetchError.source).toBe("API");
+			expect(dataFetchError.operation).toBe("getData");
+			expect(dataFetchError.retryCount).toBe(3);
+			expect(dataFetchError.cause).toBe(originalError);
+		});
 
-        it("should create DataFetchError with minimal properties", () => {
-            const dataFetchError = new DataFetchError("Fetch failed");
+		it("should create DataFetchError with minimal properties", () => {
+			const dataFetchError = new DataFetchError("Fetch failed");
 
-            expect(dataFetchError.name).toBe("DataFetchError");
-            expect(dataFetchError.message).toBe("Fetch failed");
-            expect(dataFetchError.source).toBeUndefined();
-            expect(dataFetchError.operation).toBeUndefined();
-            expect(dataFetchError.retryCount).toBeUndefined();
-            expect(dataFetchError.originalError).toBeUndefined();
-        });
-    });
+			expect(dataFetchError.name).toBe("DataFetchError");
+			expect(dataFetchError.message).toBe("Fetch failed");
+			expect(dataFetchError.source).toBeUndefined();
+			expect(dataFetchError.operation).toBeUndefined();
+			expect(dataFetchError.retryCount).toBeUndefined();
+			expect(dataFetchError.cause).toBeUndefined();
+		});
+	});
 
-    describe("DataValidationError", () => {
-        it("should create DataValidationError from ZodError", () => {
-            const zodError = createMockZodError([
-                {
-                    path: ["name"],
-                    message: "Name is required",
-                },
-                {
-                    path: ["age", "value"],
-                    message: "Age must be a number",
-                },
-            ]);
+	describe("DataValidationError", () => {
+		it("should create DataValidationError from ZodError", () => {
+			const zodError = createMockZodError([
+				{
+					path: ["name"],
+					message: "Name is required",
+				},
+				{
+					path: ["age", "value"],
+					message: "Age must be a number",
+				},
+			]);
 
-            const validationError = new DataValidationError(zodError);
+			const validationError = new DataValidationError("Zod error", zodError);
 
-            expect(validationError.name).toBe("DataValidationError");
-            expect(validationError.validationErrors).toEqual([
-                { path: "name", message: "Name is required" },
-                { path: "age.value", message: "Age must be a number" },
-            ]);
-            expect(validationError.message).toContain("Validation failed");
-        });
+			expect(validationError.name).toBe("DataValidationError");
+			expect(validationError.validationErrors).toEqual([
+				{ path: "name", message: "Name is required" },
+				{ path: "age.value", message: "Age must be a number" },
+			]);
+			expect(validationError.message).toContain("Validation failed");
+		});
 
-        it("should handle empty path in ZodError", () => {
-            const zodError = createMockZodError([
-                {
-                    path: [],
-                    message: "Root validation error",
-                },
-            ]);
+		it("should handle empty path in ZodError", () => {
+			const zodError = createMockZodError([
+				{
+					path: [],
+					message: "Root validation error",
+				},
+			]);
 
-            const validationError = new DataValidationError(zodError);
+			const validationError = new DataValidationError("Zod error", zodError);
 
-            expect(validationError.validationErrors).toEqual([
-                { path: "", message: "Root validation error" },
-            ]);
-        });
-    });
+			expect(validationError.validationErrors).toEqual([
+				{ path: "", message: "Root validation error" },
+			]);
+		});
+	});
 });
 
 describe("RetryHandler", () => {
-    let retryHandler: RetryHandler;
+	let retryHandler: RetryHandler;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        retryHandler = new RetryHandler(3, 10);
-    });
+	beforeEach(() => {
+		jest.clearAllMocks();
+		retryHandler = new RetryHandler(3, 10);
+	});
 
-    describe("execute", () => {
-        it("should execute operation successfully on first attempt", async () => {
-            // Arrange
-            const operation = jest.fn().mockResolvedValue("success");
+	describe("execute", () => {
+		it("should execute operation successfully on first attempt", async () => {
+			// Arrange
+			const operation = jest.fn().mockResolvedValue("success");
 
-            // Act
-            const result = await retryHandler.execute(operation);
+			// Act
+			const result = await retryHandler.execute(operation);
 
-            // Assert
-            expect(result).toBe("success");
-            expect(operation).toHaveBeenCalledTimes(1);
-        });
+			// Assert
+			expect(result).toBe("success");
+			expect(operation).toHaveBeenCalledTimes(1);
+		});
 
-        it("should retry on failure and succeed eventually", async () => {
-            // Arrange
-            const operation = jest
-                .fn()
-                .mockRejectedValueOnce(new Error("First failure"))
-                .mockRejectedValueOnce(new Error("Second failure"))
-                .mockResolvedValue("success");
+		it("should retry on failure and succeed eventually", async () => {
+			// Arrange
+			const operation = jest
+				.fn()
+				.mockRejectedValueOnce(new Error("First failure"))
+				.mockRejectedValueOnce(new Error("Second failure"))
+				.mockResolvedValue("success");
 
-            //const originalJest = (await import("jest")).default;
+			//const originalJest = (await import("jest")).default;
 
-            jest.useFakeTimers();
+			jest.useFakeTimers();
 
-            // Act
-            const resultPromise = retryHandler.execute(operation);
+			// Act
+			const resultPromise = retryHandler.execute(operation);
 
-            // Fast-forward through all timers
-            // NOT IMPLEMENTED YET IN BUN:TEST
-            //jest.advanceTimersByTime(3000);
+			// Fast-forward through all timers
+			// NOT IMPLEMENTED YET IN BUN:TEST
+			//jest.advanceTimersByTime(3000);
 
-            const result = await resultPromise;
+			const result = await resultPromise;
 
-            // Assert
-            expect(result).toBe("success");
-            expect(operation).toHaveBeenCalledTimes(3);
-            jest.useRealTimers();
-        });
+			// Assert
+			expect(result).toBe("success");
+			expect(operation).toHaveBeenCalledTimes(3);
+			jest.useRealTimers();
+		});
 
-        it("should fail after max attempts", async () => {
-            // Arrange
-            const error = new Error("Persistent failure");
-            const operation = jest.fn().mockRejectedValue(error);
+		it("should fail after max attempts", async () => {
+			// Arrange
+			const error = new Error("Persistent failure");
+			const operation = jest.fn().mockRejectedValue(error);
 
-            // Act & Assert
-            await expect(retryHandler.execute(operation)).rejects.toThrow(
-                "Persistent failure",
-            );
+			// Act & Assert
+			await expect(retryHandler.execute(operation)).rejects.toThrow(
+				"Persistent failure",
+			);
 
-            expect(operation).toHaveBeenCalledTimes(3);
-        });
+			expect(operation).toHaveBeenCalledTimes(3);
+		});
 
-        it("should respect shouldRetry function", async () => {
-            // Arrange
-            const error = new Error("Non-retryable error");
-            const operation = jest.fn().mockRejectedValue(error);
-            const shouldRetry = jest.fn().mockReturnValue(false);
+		it("should respect shouldRetry function", async () => {
+			// Arrange
+			const error = new Error("Non-retryable error");
+			const operation = jest.fn().mockRejectedValue(error);
+			const shouldRetry = jest.fn().mockReturnValue(false);
 
-            // Act & Assert
-            await expect(
-                retryHandler.execute(operation, shouldRetry),
-            ).rejects.toThrow("Non-retryable error");
+			// Act & Assert
+			await expect(
+				retryHandler.execute(operation, shouldRetry),
+			).rejects.toThrow("Non-retryable error");
 
-            expect(operation).toHaveBeenCalledTimes(1);
-            expect(shouldRetry).toHaveBeenCalledWith(error);
-        });
+			expect(operation).toHaveBeenCalledTimes(1);
+			expect(shouldRetry).toHaveBeenCalledWith(error);
+		});
 
-        it("should handle non-Error rejections", async () => {
-            // Arrange
-            const operation = jest.fn().mockRejectedValue("string error");
+		it("should handle non-Error rejections", async () => {
+			// Arrange
+			const operation = jest.fn().mockRejectedValue("string error");
 
-            // Act & Assert
-            await expect(retryHandler.execute(operation)).rejects.toThrow(
-                "string error",
-            );
+			// Act & Assert
+			await expect(retryHandler.execute(operation)).rejects.toThrow(
+				"string error",
+			);
 
-            expect(operation).toHaveBeenCalledTimes(3);
-        });
+			expect(operation).toHaveBeenCalledTimes(3);
+		});
 
-        it("should use exponential backoff delays", async () => {
-            // Arrange
-            const operation = jest
-                .fn()
-                .mockRejectedValueOnce(new Error("First failure"))
-                .mockRejectedValueOnce(new Error("Second failure"))
-                .mockResolvedValue("success");
+		it("should use exponential backoff delays", async () => {
+			// Arrange
+			const operation = jest
+				.fn()
+				.mockRejectedValueOnce(new Error("First failure"))
+				.mockRejectedValueOnce(new Error("Second failure"))
+				.mockResolvedValue("success");
 
-            // Spy on the private delay method through the class prototype
-            const delaySpy = jest.spyOn(
-                RetryHandler.prototype as unknown as {
-                    delay: (ms: number) => Promise<void>;
-                },
-                "delay",
-            );
-            delaySpy.mockImplementation(() => Promise.resolve());
+			// Spy on the private delay method through the class prototype
+			const delaySpy = jest.spyOn(
+				RetryHandler.prototype as unknown as {
+					delay: (ms: number) => Promise<void>;
+				},
+				"delay",
+			);
+			delaySpy.mockImplementation(() => Promise.resolve());
 
-            // Act
-            await retryHandler.execute(operation);
+			// Act
+			await retryHandler.execute(operation);
 
-            // Assert
-            expect(delaySpy).toHaveBeenCalledTimes(2);
-            // First retry: 1000ms * 2^0 = 1000ms
-            expect(delaySpy).toHaveBeenNthCalledWith(1, 10);
-            // Second retry: 1000ms * 2^1 = 2000ms
-            expect(delaySpy).toHaveBeenNthCalledWith(2, 20);
+			// Assert
+			expect(delaySpy).toHaveBeenCalledTimes(2);
+			// First retry: 1000ms * 2^0 = 1000ms
+			expect(delaySpy).toHaveBeenNthCalledWith(1, 10);
+			// Second retry: 1000ms * 2^1 = 2000ms
+			expect(delaySpy).toHaveBeenNthCalledWith(2, 20);
 
-            // Cleanup
-            delaySpy.mockRestore();
-        });
-    });
+			// Cleanup
+			delaySpy.mockRestore();
+		});
+	});
 });
 
 describe("CircuitBreaker", () => {
-    let circuitBreaker: CircuitBreaker;
-    let mockDateNow: jest.Mock;
-    let cleanup: (() => void) | undefined;
+	let circuitBreaker: CircuitBreaker;
+	let mockDateNow: jest.Mock;
+	let cleanup: (() => void) | undefined;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        circuitBreaker = new CircuitBreaker(3, 100); // 3 failures, 100ms timeout
+	beforeEach(() => {
+		jest.clearAllMocks();
+		circuitBreaker = new CircuitBreaker(3, 100); // 3 failures, 100ms timeout
 
-        // Mock Date.now for time control
-        mockDateNow = jest.fn();
-        const originalDateNow = Date.now;
-        Date.now = mockDateNow;
+		// Mock Date.now for time control
+		mockDateNow = jest.fn();
+		const originalDateNow = Date.now;
+		Date.now = mockDateNow;
 
-        // Start at time 0
-        mockDateNow.mockReturnValue(0);
+		// Start at time 0
+		mockDateNow.mockReturnValue(0);
 
-        // Cleanup function to restore Date.now after tests
-        cleanup = () => {
-            Date.now = originalDateNow;
-        };
-    });
+		// Cleanup function to restore Date.now after tests
+		cleanup = () => {
+			Date.now = originalDateNow;
+		};
+	});
 
-    afterEach(() => {
-        cleanup?.();
-    });
+	afterEach(() => {
+		cleanup?.();
+	});
 
-    describe("execute", () => {
-        it("should execute operation successfully when circuit is closed", async () => {
-            // Arrange
-            const operation = jest.fn().mockResolvedValue("success");
+	describe("execute", () => {
+		it("should execute operation successfully when circuit is closed", async () => {
+			// Arrange
+			const operation = jest.fn().mockResolvedValue("success");
 
-            // Act
-            const result = await circuitBreaker.execute(
-                operation,
-                "testOperation",
-            );
+			// Act
+			const result = await circuitBreaker.execute(operation, "testOperation");
 
-            // Assert
-            expect(result).toBe("success");
-            expect(operation).toHaveBeenCalledTimes(1);
-            expect(circuitBreaker.getState()).toBe("CLOSED");
-            expect(circuitBreaker.getFailureCount()).toBe(0);
-        });
+			// Assert
+			expect(result).toBe("success");
+			expect(operation).toHaveBeenCalledTimes(1);
+			expect(circuitBreaker.getState()).toBe("CLOSED");
+			expect(circuitBreaker.getFailureCount()).toBe(0);
+		});
 
-        it("should open circuit after failure threshold", async () => {
-            // Arrange
-            const error = new Error("Test failure");
-            const operation = jest.fn().mockRejectedValue(error);
+		it("should open circuit after failure threshold", async () => {
+			// Arrange
+			const error = new Error("Test failure");
+			const operation = jest.fn().mockRejectedValue(error);
 
-            // Act & Assert
-            // First failure
-            await expect(
-                circuitBreaker.execute(operation, "testOperation"),
-            ).rejects.toThrow("Test failure");
-            expect(circuitBreaker.getState()).toBe("CLOSED");
-            expect(circuitBreaker.getFailureCount()).toBe(1);
+			// Act & Assert
+			// First failure
+			await expect(
+				circuitBreaker.execute(operation, "testOperation"),
+			).rejects.toThrow("Test failure");
+			expect(circuitBreaker.getState()).toBe("CLOSED");
+			expect(circuitBreaker.getFailureCount()).toBe(1);
 
-            // Second failure
-            await expect(
-                circuitBreaker.execute(operation, "testOperation"),
-            ).rejects.toThrow("Test failure");
-            expect(circuitBreaker.getState()).toBe("CLOSED");
-            expect(circuitBreaker.getFailureCount()).toBe(2);
+			// Second failure
+			await expect(
+				circuitBreaker.execute(operation, "testOperation"),
+			).rejects.toThrow("Test failure");
+			expect(circuitBreaker.getState()).toBe("CLOSED");
+			expect(circuitBreaker.getFailureCount()).toBe(2);
 
-            // Third failure - should open circuit
-            await expect(
-                circuitBreaker.execute(operation, "testOperation"),
-            ).rejects.toThrow("Test failure");
-            expect(circuitBreaker.getState()).toBe("OPEN");
-            expect(circuitBreaker.getFailureCount()).toBe(3);
-        });
+			// Third failure - should open circuit
+			await expect(
+				circuitBreaker.execute(operation, "testOperation"),
+			).rejects.toThrow("Test failure");
+			expect(circuitBreaker.getState()).toBe("OPEN");
+			expect(circuitBreaker.getFailureCount()).toBe(3);
+		});
 
-        it("should reject immediately when circuit is open", async () => {
-            // Arrange - Force circuit to open
-            const error = new Error("Test failure");
-            const operation = jest.fn().mockRejectedValue(error);
+		it("should reject immediately when circuit is open", async () => {
+			// Arrange - Force circuit to open
+			const error = new Error("Test failure");
+			const operation = jest.fn().mockRejectedValue(error);
 
-            // Open the circuit
-            for (let i = 0; i < 3; i++) {
-                try {
-                    await circuitBreaker.execute(operation, "testOperation");
-                } catch {
-                    // Ignore errors
-                }
-            }
-            expect(circuitBreaker.getState()).toBe("OPEN");
+			// Open the circuit
+			for (let i = 0; i < 3; i++) {
+				try {
+					await circuitBreaker.execute(operation, "testOperation");
+				} catch {
+					// Ignore errors
+				}
+			}
+			expect(circuitBreaker.getState()).toBe("OPEN");
 
-            // Reset operation mock
-            operation.mockClear();
+			// Reset operation mock
+			operation.mockClear();
 
-            // Act & Assert
-            await expect(
-                circuitBreaker.execute(operation, "testOperation"),
-            ).rejects.toThrow("Circuit breaker is open for testOperation");
+			// Act & Assert
+			await expect(
+				circuitBreaker.execute(operation, "testOperation"),
+			).rejects.toThrow("Circuit breaker is open for testOperation");
 
-            expect(operation).not.toHaveBeenCalled();
-        });
+			expect(operation).not.toHaveBeenCalled();
+		});
 
-        it("should transition to half-open after timeout", async () => {
-            // Arrange - Open the circuit
-            const error = new Error("Test failure");
-            const failingOperation = jest.fn().mockRejectedValue(error);
+		it("should transition to half-open after timeout", async () => {
+			// Arrange - Open the circuit
+			const error = new Error("Test failure");
+			const failingOperation = jest.fn().mockRejectedValue(error);
 
-            for (let i = 0; i < 3; i++) {
-                try {
-                    await circuitBreaker.execute(
-                        failingOperation,
-                        "testOperation",
-                    );
-                } catch {
-                    // Ignore errors
-                }
-            }
-            expect(circuitBreaker.getState()).toBe("OPEN");
+			for (let i = 0; i < 3; i++) {
+				try {
+					await circuitBreaker.execute(failingOperation, "testOperation");
+				} catch {
+					// Ignore errors
+				}
+			}
+			expect(circuitBreaker.getState()).toBe("OPEN");
 
-            // Advance time past timeout (5000ms)
-            mockDateNow.mockReturnValue(6000);
+			// Advance time past timeout (5000ms)
+			mockDateNow.mockReturnValue(6000);
 
-            const successOperation = jest.fn().mockResolvedValue("success");
+			const successOperation = jest.fn().mockResolvedValue("success");
 
-            // Act
-            const result = await circuitBreaker.execute(
-                successOperation,
-                "testOperation",
-            );
+			// Act
+			const result = await circuitBreaker.execute(
+				successOperation,
+				"testOperation",
+			);
 
-            // Assert
-            expect(result).toBe("success");
-            expect(circuitBreaker.getState()).toBe("CLOSED");
-            expect(circuitBreaker.getFailureCount()).toBe(0);
-        });
+			// Assert
+			expect(result).toBe("success");
+			expect(circuitBreaker.getState()).toBe("CLOSED");
+			expect(circuitBreaker.getFailureCount()).toBe(0);
+		});
 
-        it("should reopen circuit if half-open operation fails", async () => {
-            // Arrange - Open the circuit
-            const error = new Error("Test failure");
-            const failingOperation = jest.fn().mockRejectedValue(error);
+		it("should reopen circuit if half-open operation fails", async () => {
+			// Arrange - Open the circuit
+			const error = new Error("Test failure");
+			const failingOperation = jest.fn().mockRejectedValue(error);
 
-            for (let i = 0; i < 3; i++) {
-                try {
-                    await circuitBreaker.execute(
-                        failingOperation,
-                        "testOperation",
-                    );
-                } catch {
-                    // Ignore errors
-                }
-            }
+			for (let i = 0; i < 3; i++) {
+				try {
+					await circuitBreaker.execute(failingOperation, "testOperation");
+				} catch {
+					// Ignore errors
+				}
+			}
 
-            // Advance time past timeout
-            mockDateNow.mockReturnValue(6000);
+			// Advance time past timeout
+			mockDateNow.mockReturnValue(6000);
 
-            // Act & Assert
-            await expect(
-                circuitBreaker.execute(failingOperation, "testOperation"),
-            ).rejects.toThrow("Test failure");
+			// Act & Assert
+			await expect(
+				circuitBreaker.execute(failingOperation, "testOperation"),
+			).rejects.toThrow("Test failure");
 
-            expect(circuitBreaker.getState()).toBe("OPEN");
-            expect(circuitBreaker.getFailureCount()).toBe(4);
-        });
+			expect(circuitBreaker.getState()).toBe("OPEN");
+			expect(circuitBreaker.getFailureCount()).toBe(4);
+		});
 
-        it("should not attempt reset before timeout", async () => {
-            // Arrange - Open the circuit
-            const error = new Error("Test failure");
-            const operation = jest.fn().mockRejectedValue(error);
+		it("should not attempt reset before timeout", async () => {
+			// Arrange - Open the circuit
+			const error = new Error("Test failure");
+			const operation = jest.fn().mockRejectedValue(error);
 
-            for (let i = 0; i < 3; i++) {
-                try {
-                    await circuitBreaker.execute(operation, "testOperation");
-                } catch {
-                    // Ignore errors
-                }
-            }
+			for (let i = 0; i < 3; i++) {
+				try {
+					await circuitBreaker.execute(operation, "testOperation");
+				} catch {
+					// Ignore errors
+				}
+			}
 
-            // Advance time but not past timeout (90ms < 100ms)
-            mockDateNow.mockReturnValue(90);
+			// Advance time but not past timeout (90ms < 100ms)
+			mockDateNow.mockReturnValue(90);
 
-            // Act & Assert
-            await expect(
-                circuitBreaker.execute(operation, "testOperation"),
-            ).rejects.toThrow("Circuit breaker is open for testOperation");
+			// Act & Assert
+			await expect(
+				circuitBreaker.execute(operation, "testOperation"),
+			).rejects.toThrow("Circuit breaker is open for testOperation");
 
-            expect(circuitBreaker.getState()).toBe("OPEN");
-        });
+			expect(circuitBreaker.getState()).toBe("OPEN");
+		});
 
-        it("should handle non-Error rejections", async () => {
-            // Arrange
-            const operation = jest.fn().mockRejectedValue("string error");
+		it("should handle non-Error rejections", async () => {
+			// Arrange
+			const operation = jest.fn().mockRejectedValue("string error");
 
-            // Act & Assert
-            await expect(
-                circuitBreaker.execute(operation, "testOperation"),
-            ).rejects.toBe("string error");
+			// Act & Assert
+			await expect(
+				circuitBreaker.execute(operation, "testOperation"),
+			).rejects.toBe("string error");
 
-            expect(circuitBreaker.getFailureCount()).toBe(1);
-        });
+			expect(circuitBreaker.getFailureCount()).toBe(1);
+		});
 
-        it("should reset failure count on success in closed state", async () => {
-            // Arrange
-            const failingOperation = jest
-                .fn()
-                .mockRejectedValue(new Error("Failure"));
-            const successOperation = jest.fn().mockResolvedValue("success");
+		it("should reset failure count on success in closed state", async () => {
+			// Arrange
+			const failingOperation = jest
+				.fn()
+				.mockRejectedValue(new Error("Failure"));
+			const successOperation = jest.fn().mockResolvedValue("success");
 
-            // Fail once
-            try {
-                await circuitBreaker.execute(failingOperation, "testOperation");
-            } catch {
-                // Ignore errors
-            }
-            expect(circuitBreaker.getFailureCount()).toBe(1);
+			// Fail once
+			try {
+				await circuitBreaker.execute(failingOperation, "testOperation");
+			} catch {
+				// Ignore errors
+			}
+			expect(circuitBreaker.getFailureCount()).toBe(1);
 
-            // Act - succeed
-            const result = await circuitBreaker.execute(
-                successOperation,
-                "testOperation",
-            );
+			// Act - succeed
+			const result = await circuitBreaker.execute(
+				successOperation,
+				"testOperation",
+			);
 
-            // Assert
-            expect(result).toBe("success");
-            expect(circuitBreaker.getFailureCount()).toBe(0);
-        });
-    });
+			// Assert
+			expect(result).toBe("success");
+			expect(circuitBreaker.getFailureCount()).toBe(0);
+		});
+	});
 });
 
 describe("ErrorHandler", () => {
-    let errorHandler: ErrorHandler;
+	let errorHandler: ErrorHandler;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        errorHandler = new ErrorHandler();
-    });
+	beforeEach(() => {
+		jest.clearAllMocks();
+		errorHandler = new ErrorHandler();
+	});
 
-    describe("handleAPIError", () => {
-        it("should handle HTTP error response", () => {
-            // Arrange
-            const httpError = {
-                response: {
-                    status: 404,
-                    data: { message: "Not found" },
-                },
-                message: "Request failed",
-            };
+	describe("handleError", () => {
+		it("should handle error object with default message", () => {
+			// Arrange
+			const httpError = {
+				response: {
+					status: 404,
+					data: { message: "Not found" },
+				},
+				message: "Request failed",
+			};
 
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleAPIError(
-                    httpError,
-                    "TestService",
-                    "getData",
-                ),
-            ).toThrow(APIError);
+			try {
+				throw errorHandler.handleError(httpError, APIError, {
+					service: "TestService",
+					statusCode: httpError.response.status,
+				});
+			} catch (error) {
+				expect(error).toBeInstanceOf(APIError);
+				expect((error as APIError).message).toBe("Request failed");
+				expect((error as APIError).statusCode).toBe(404);
+				expect((error as APIError).service).toBe("TestService");
+			}
+		});
 
-            try {
-                errorHandler.handleAPIError(
-                    httpError,
-                    "TestService",
-                    "getData",
-                );
-            } catch (error) {
-                expect(error).toBeInstanceOf(APIError);
-                expect((error as APIError).message).toBe(
-                    "TestService getData failed: Not found",
-                );
-                expect((error as APIError).statusCode).toBe(404);
-                expect((error as APIError).service).toBe("TestService");
-            }
-        });
+		it("should handle Error with custom message", () => {
+			// Arrange
+			const httpError = new Error("Request failed");
+			(
+				httpError as unknown as {
+					response: { status: number; data: { message: string } };
+				}
+			).response = {
+				status: 404,
+				data: { message: "Not found" },
+			};
 
-        it("should handle HTTP error without data message", () => {
-            // Arrange
-            const httpError = {
-                response: { status: 500 },
-                message: "Internal server error",
-            };
+			try {
+				throw errorHandler.handleError(httpError, APIError, {
+					message: `${httpError.message}: Not Found`,
+					service: "TestService",
+					statusCode: (httpError as unknown as { response: { status: number } })
+						.response.status,
+				});
+			} catch (error) {
+				expect(error).toBeInstanceOf(APIError);
+				expect((error as APIError).message).toBe("Request failed: Not Found");
+				expect((error as APIError).statusCode).toBe(404);
+				expect((error as APIError).service).toBe("TestService");
+			}
+		});
+	});
 
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleAPIError(
-                    httpError,
-                    "TestService",
-                    "getData",
-                ),
-            ).toThrow("TestService getData failed: Internal server error");
-        });
+	describe("safeExecute", () => {
+		it("should return operation result on success", async () => {
+			// Arrange
+			const operation = jest.fn().mockResolvedValue("success");
 
-        it("should handle network error", () => {
-            // Arrange
-            const networkError = {
-                request: {},
-                message: "Network timeout",
-            };
+			// Act
+			const result = await errorHandler.safeExecute(operation, "testOperation");
 
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleAPIError(
-                    networkError,
-                    "TestService",
-                    "getData",
-                ),
-            ).toThrow("TestService getData failed: Network error");
-        });
+			// Assert
+			expect(result).toBe("success");
+			expect(operation).toHaveBeenCalledTimes(1);
+		});
 
-        it("should handle generic error object", () => {
-            // Arrange
-            const genericError = { message: "Something went wrong" };
+		it("should return undefined on error without default value", async () => {
+			// Arrange
+			const error = new Error("Operation failed");
+			const operation = jest.fn().mockRejectedValue(error);
 
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleAPIError(
-                    genericError,
-                    "TestService",
-                    "getData",
-                ),
-            ).toThrow("TestService getData failed: Something went wrong");
-        });
+			// Act
+			const result = await errorHandler.safeExecute(operation);
 
-        it("should handle string error", () => {
-            // Arrange
-            const stringError = "String error message";
+			// Assert
+			expect(result).toBeUndefined();
+		});
 
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleAPIError(
-                    stringError,
-                    "TestService",
-                    "getData",
-                ),
-            ).toThrow("TestService getData failed: Unknown error");
-        });
+		it("should return default value on error", async () => {
+			// Arrange
+			const error = new Error("Operation failed");
+			const operation = jest.fn().mockRejectedValue(error);
+			const defaultValue = "fallback";
 
-        it("should handle null/undefined error", () => {
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleAPIError(null, "TestService", "getData"),
-            ).toThrow("TestService getData failed: Unknown error");
+			// Act
+			const result = await errorHandler.safeExecute(operation, defaultValue);
 
-            expect(() =>
-                errorHandler.handleAPIError(
-                    undefined,
-                    "TestService",
-                    "getData",
-                ),
-            ).toThrow("TestService getData failed: Unknown error");
-        });
-    });
-
-    describe("handleDataFetchError", () => {
-        it("should re-throw existing DataFetchError", () => {
-            // Arrange
-            const existingError = new DataFetchError(
-                "Existing error",
-                "API",
-                "fetch",
-                2,
-            );
-
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleDataFetchError(
-                    existingError,
-                    "NewSource",
-                    "newOp",
-                ),
-            ).toThrow(existingError);
-        });
-
-        it("should create DataFetchError from generic error", () => {
-            // Arrange
-            const genericError = new Error("Generic failure");
-
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleDataFetchError(
-                    genericError,
-                    "Database",
-                    "query",
-                    3,
-                ),
-            ).toThrow(DataFetchError);
-
-            try {
-                errorHandler.handleDataFetchError(
-                    genericError,
-                    "Database",
-                    "query",
-                    3,
-                );
-            } catch (error) {
-                expect(error).toBeInstanceOf(DataFetchError);
-                expect((error as DataFetchError).message).toBe(
-                    "Data fetch from Database failed during query after 3 retries: Generic failure",
-                );
-                expect((error as DataFetchError).source).toBe("Database");
-                expect((error as DataFetchError).operation).toBe("query");
-                expect((error as DataFetchError).retryCount).toBe(3);
-            }
-        });
-
-        it("should create DataFetchError without retry count", () => {
-            // Arrange
-            const error = { message: "Connection failed" };
-
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleDataFetchError(error, "API", "connect"),
-            ).toThrow(
-                "Data fetch from API failed during connect: Connection failed",
-            );
-        });
-
-        it("should handle non-object errors", () => {
-            // Act & Assert
-            expect(() =>
-                errorHandler.handleDataFetchError(
-                    "string error",
-                    "Source",
-                    "op",
-                ),
-            ).toThrow(
-                "Data fetch from Source failed during op: Unknown data fetch error",
-            );
-        });
-    });
-
-    describe("safeExecute", () => {
-        it("should return operation result on success", async () => {
-            // Arrange
-            const operation = jest.fn().mockResolvedValue("success");
-
-            // Act
-            const result = await errorHandler.safeExecute(
-                operation,
-                "testOperation",
-            );
-
-            // Assert
-            expect(result).toBe("success");
-            expect(operation).toHaveBeenCalledTimes(1);
-        });
-
-        it("should return undefined on error without default value", async () => {
-            // Arrange
-            const error = new Error("Operation failed");
-            const operation = jest.fn().mockRejectedValue(error);
-
-            // Act
-            const result = await errorHandler.safeExecute(operation);
-
-            // Assert
-            expect(result).toBeUndefined();
-        });
-
-        it("should return default value on error", async () => {
-            // Arrange
-            const error = new Error("Operation failed");
-            const operation = jest.fn().mockRejectedValue(error);
-            const defaultValue = "fallback";
-
-            // Act
-            const result = await errorHandler.safeExecute(
-                operation,
-                defaultValue,
-            );
-
-            // Assert
-            expect(result).toBe("fallback");
-        });
-    });
-
-    describe("formatError", () => {
-        it("should format APIError", () => {
-            // Arrange
-            const apiError = new APIError("API failed", 500, "TestService");
-
-            // Act
-            const formatted = errorHandler.formatError(apiError);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "API error from TestService",
-                type: "api",
-                details: {
-                    service: "TestService",
-                    statusCode: 500,
-                },
-            });
-        });
-
-        it("should format APIError without service", () => {
-            // Arrange
-            const apiError = new APIError("API failed", 404);
-
-            // Act
-            const formatted = errorHandler.formatError(apiError);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "API error",
-                type: "api",
-                details: {
-                    service: undefined,
-                    statusCode: 404,
-                },
-            });
-        });
-
-        it("should format DataFetchError", () => {
-            // Arrange
-            const dataFetchError = new DataFetchError(
-                "Fetch failed",
-                "Database",
-                "query",
-                2,
-            );
-
-            // Act
-            const formatted = errorHandler.formatError(dataFetchError);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "Data fetch error from Database",
-                type: "data-fetch",
-                details: {
-                    source: "Database",
-                    operation: "query",
-                    retryCount: 2,
-                },
-            });
-        });
-
-        it("should format DataValidationError", () => {
-            // Arrange
-            const zodError = createMockZodError([
-                { path: ["name"], message: "Name required" },
-            ]);
-            const validationError = new DataValidationError(zodError);
-
-            // Act
-            const formatted = errorHandler.formatError(validationError);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "Data validation error",
-                type: "data-validation",
-                details: {
-                    dataType: validationError.message,
-                    validationErrors: [
-                        { path: "name", message: "Name required" },
-                    ],
-                },
-            });
-        });
-
-        it("should format ConfigurationError", () => {
-            // Arrange
-            const configError = new ConfigurationError(
-                "Config missing",
-                "api.key",
-            );
-
-            // Act
-            const formatted = errorHandler.formatError(configError);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "Configuration error",
-                type: "configuration",
-                details: { configKey: "api.key" },
-            });
-        });
-
-        it("should format unknown error", () => {
-            // Arrange
-            const unknownError = new Error("Unknown error");
-
-            // Act
-            const formatted = errorHandler.formatError(unknownError);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "Unknown error",
-                type: "unknown",
-            });
-        });
-
-        it("should handle error without message", () => {
-            // Arrange
-            const errorWithoutMessage = new Error();
-            errorWithoutMessage.message = "";
-
-            // Act
-            const formatted = errorHandler.formatError(errorWithoutMessage);
-
-            // Assert
-            expect(formatted).toEqual({
-                message: "Unknown error",
-                type: "unknown",
-            });
-        });
-    });
+			// Assert
+			expect(result).toBe("fallback");
+		});
+	});
 });

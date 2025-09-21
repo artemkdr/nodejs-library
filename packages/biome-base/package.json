@@ -1,7 +1,7 @@
 {
-	"name": "@artemkdr/tsconfig-base-bun",
+	"name": "@artemkdr/biome-base",
 	"version": "0.0.1",
-	"description": "Shared TypeScript configuration for all packages using bun",
+	"description": "Shared Biome configuration for all packages",
 	"main": "base.json",
 	"files": [
 		"base.json",
@@ -22,7 +22,7 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/artemkdr/nodejs-library.git",
-		"directory": "packages/tsconfig-base-bun"
+		"directory": "packages/biome-base"
 	},
 	"author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
 	"license": "MIT",
@@ -33,7 +33,7 @@
 	"keywords": [
 		"typescript",
 		"config",
-		"tsconfig",
+		"biome",
 		"shared",
 		"base"
 	]
