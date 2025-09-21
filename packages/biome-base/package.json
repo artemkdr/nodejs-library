@@ -13,7 +13,11 @@
 		"lint": "bunx biome format && bunx biome lint",
 		"lint:fix": "bunx biome format --write && bunx biome lint --write",
 		"build": "echo \"No build needed for config package\"",
-		"clean": "echo \"No clean needed for config package\""
+		"clean": "echo \"No clean needed for config package\"",
+		"prepublishOnly": "bun run lint",
+		"version:patch": "bun pm version patch",
+		"version:minor": "bun pm version minor",
+		"version:major": "bun pm version major"
 	},
 	"engines": {
 		"node": ">=18.0.0",

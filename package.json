@@ -30,11 +30,6 @@
     "lint": "bun --filter='*' lint",
     "lint:fix": "bun --filter='*' lint:fix",
     "clean": "bun run --filter='*' clean && rm -rf node_modules/.cache",
-    "prepublishOnly": "bun --filter='*' test && bun --filter='*' lint",
-    "publish:all": "bun --filter='*' publish",
-    "version:patch": "bun run --filter='*' version:patch",
-    "version:minor": "bun run --filter='*' version:minor",
-    "version:major": "bun run --filter='*' version:major",
     "install:all": "bun install"
   },
   "workspaces": [

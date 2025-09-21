@@ -43,10 +43,10 @@
 		"lint": "bunx biome format && bunx biome lint",
 		"lint:fix": "bunx biome format --write && bunx biome lint --write",
 		"clean": "rm -rf dist",
-		"prepublishOnly": "bun run build && bun run test",
-		"version:patch": "bun version patch",
-		"version:minor": "bun version minor",
-		"version:major": "bun version major"
+		"prepublishOnly": "bun run build && bun run lint && bun run test",
+		"version:patch": "bun pm version patch",
+		"version:minor": "bun pm version minor",
+		"version:major": "bun pm version major"
 	},
 	"dependencies": {
 		"winston": "^3.13.0",
