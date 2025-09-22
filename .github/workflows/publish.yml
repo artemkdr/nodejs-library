@@ -9,15 +9,15 @@ on:
                 options:
                 - core
                 - biome-base
-                - langchain-patches
+                - langchainjs-patches
                 - tsconfig-base-bun
-            version:
-                type: choice
-                description: Patch, minor, or major version bump
-                options:
-                - patch
-                - minor
-                - major
+            # version:
+            #     type: choice
+            #     description: Patch, minor, or major version bump
+            #     options:
+            #     - patch
+            #     - minor
+            #     - major
                 
 
 jobs:
