@@ -1,6 +1,6 @@
 {
     "name": "@artemkdr/biome-base",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Shared Biome configuration for all packages",
     "main": "base.json",
     "files": [

@@ -45,14 +45,9 @@ jobs:
             - name: Run tests
               run: bun test
 
-            - name: Set package version
-              run: |
-                  cd ${{ inputs.package }}
-                  bun version:${{ inputs.version }}
-
             - name: Publish packages
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
-                  cd ${{ inputs.package }}
+                  cd ./packages/${{ inputs.package }}
                   bun publish
