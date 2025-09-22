@@ -1,45 +1,45 @@
 {
-	"name": "@artemkdr/biome-base",
-	"version": "0.0.2",
-	"description": "Shared Biome configuration for all packages",
-	"main": "base.json",
-	"files": [
-		"base.json",
-		"README.md",
-		"LICENSE"
-	],
-	"scripts": {
-		"test": "echo \"No tests for config package\"",
-		"lint": "bunx biome format && bunx biome lint",
-		"lint:fix": "bunx biome format --write && bunx biome lint --write",
-		"build": "echo \"No build needed for config package\"",
-		"clean": "echo \"No clean needed for config package\"",
-		"prepublishOnly": "bun run lint",
-		"version:patch": "bun pm version patch",
-		"version:minor": "bun pm version minor",
-		"version:major": "bun pm version major"
-	},
-	"engines": {
-		"node": ">=18.0.0",
-		"bun": ">=1.0.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/artemkdr/nodejs-library.git",
-		"directory": "packages/biome-base"
-	},
-	"author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
-	"license": "MIT",
-	"publishConfig": {
-		"registry": "https://registry.npmjs.org",
-		"access": "public"
-	},
-	"homepage": "https://github.com/artemkdr/nodejs-library/tree/main/packages/biome-base",
-	"keywords": [
-		"typescript",
-		"config",
-		"biome",
-		"shared",
-		"base"
-	]
+    "name": "@artemkdr/biome-base",
+    "version": "0.0.2",
+    "description": "Shared Biome configuration for all packages",
+    "main": "base.json",
+    "files": [
+        "base.json",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "test": "echo \"No tests for config package\"",
+        "lint": "bunx biome format && bunx biome lint",
+        "lint:fix": "bunx biome format --write && bunx biome lint --write",
+        "build": "echo \"No build needed for config package\"",
+        "clean": "echo \"No clean needed for config package\"",
+        "prepublishOnly": "bun run lint",
+        "version:patch": "bun pm version patch",
+        "version:minor": "bun pm version minor",
+        "version:major": "bun pm version major"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "bun": ">=1.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/artemkdr/nodejs-library.git",
+        "directory": "packages/biome-base"
+    },
+    "author": "Artem Kudryavtsev <artem.kdr@gmail.com>",
+    "license": "MIT",
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org",
+        "access": "public"
+    },
+    "homepage": "https://github.com/artemkdr/nodejs-library/tree/main/packages/biome-base",
+    "keywords": [
+        "typescript",
+        "config",
+        "biome",
+        "shared",
+        "base"
+    ]
 }
