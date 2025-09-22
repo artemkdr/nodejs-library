@@ -11,31 +11,22 @@
 			"require": "./dist/index.js",
 			"types": "./dist/index.d.ts",
 			"bun": "./src/index.ts"
-		},
-		"./types": {
-			"import": "./dist/types/index.mjs",
-			"require": "./dist/types/index.js",
-			"types": "./dist/types/index.d.ts",
-			"bun": "./src/types/index.ts"
-		},
-		"./utils": {
-			"import": "./dist/utils/index.mjs",
-			"require": "./dist/utils/index.js",
-			"types": "./dist/utils/index.d.ts",
-			"bun": "./src/utils/index.ts"
 		}
 	},
 	"files": [
-		"dist",
-		"src",
+		"dist/**/*.js",
+		"dist/**/*.mjs",
+		"dist/**/*.d.ts",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*",
 		"README.md",
 		"LICENSE"
 	],
 	"scripts": {
 		"build": "bun run clean && bun run build:types && bun run build:cjs && bun run build:esm",
 		"build:types": "bun x tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist",
-		"build:cjs": "bun build src/index.ts --outdir dist --format cjs --target node",
-		"build:esm": "bun build src/index.ts --outfile dist/index.mjs --format esm --target node",
+		"build:cjs": "bun build src/index.ts --outdir dist --format cjs --target node --external dotenv --external winston --external zod",
+		"build:esm": "bun build src/index.ts --outfile dist/index.mjs --format esm --target node --external dotenv --external winston --external zod",
 		"dev": "bun x tsc --watch",
 		"test": "bun test",
 		"test:watch": "bun test --watch",

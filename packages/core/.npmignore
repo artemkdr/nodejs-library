@@ -1,0 +1,48 @@
+# Source files (only dist should be published)
+src/
+*.ts
+!*.d.ts
+
+# Test files
+**/*.test.*
+**/*.spec.*
+**/test/
+**/tests/
+**/__tests__/
+
+# Development files
+tsconfig*.json
+biome.json
+.eslintrc*
+.prettierrc*
+bunfig.toml
+bun.lock
+
+# Build artifacts
+node_modules/
+coverage/
+.nyc_output/
+
+# Development tools
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.travis.yml
+.circleci/
+
+# Documentation (keep only README.md)
+docs/
+*.md
+!README.md
+
+# Environment files
+.env*
