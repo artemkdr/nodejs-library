@@ -1,6 +1,6 @@
 {
 	"name": "@artemkdr/langchainjs-patches",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Patches and enhancements for LangChain.js",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
@@ -28,7 +28,6 @@
 		"README.md",
 		"LICENSE"
 	],
-
 	"scripts": {
 		"build": "bun run clean && bun run build:types && bun run build:cjs && bun run build:esm",
 		"build:types": "bun x tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist",
